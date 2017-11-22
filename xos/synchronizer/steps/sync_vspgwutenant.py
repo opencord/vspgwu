@@ -21,6 +21,7 @@ from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAns
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
 
+
 class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
     observes = VSPGWUTenant
     template_name = "vspgwutenant_playbook.yaml"
@@ -31,23 +32,23 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
     def get_extra_attributes(self, o):
 
-        scenario = self.get_scenario()
+        scenario = self.get_scenario(o)
 
         if scenario == 'ng4t_with_sdncontroller':
-            return self.get_values_for_ng4t_w_sdncontroller()
+            return self.get_values_for_ng4t_w_sdncontroller(o)
         elif scenario == 'ng4t_without_sdncontroller':
-            return self.get_values_for_ng4t_wo_sdncontroller()
+            return self.get_values_for_ng4t_wo_sdncontroller(o)
         elif scenario == 'spirent_with_sdncontroller':
-            return self.get_values_for_spirent_w_sdncontroller()
+            return self.get_values_for_spirent_w_sdncontroller(o)
         elif scenario == 'spirent_without_sdncontroller':
-            return self.get_values_for_spirent_wo_sdncontroller()
+            return self.get_values_for_spirent_wo_sdncontroller(o)
         else:
-            return self.get_extra_attributes_for_manual()
+            return self.get_extra_attributes_for_manual(o)
 
     # fields for manual case
-    def get_extra_attributes_for_manual(self):
+    def get_extra_attributes_for_manual(self, o):
         fields = {}
-        fields['scenario'] = self.get_scenario()
+        fields['scenario'] = self.get_scenario(o)
         # for interface.cfg file
         fields['zmq_sub_ip'] = "manual"
         fields['zmq_pub_ip'] = "manual"
@@ -62,132 +63,117 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         return fields
 
-    def get_values_for_ng4t_w_sdncontroller(self):
+    def get_values_for_ng4t_w_sdncontroller(self, o):
         fields = {}
         fields['scenario'] = "ng4t_with_sdncontroller"
         # for interface.cfg file
-        fields['zmq_sub_ip'] = self.get_ip_address('sbi_network', SDNControllerServiceInstance, 'zmq_sub_ip')
-        fields['zmq_pub_ip'] = self.get_ip_address('sbi_network', SDNControllerServiceInstance, 'zmq_pub_ip')
-        fields['dp_comm_ip'] = self.get_ip_address('sbi_network', VSPGWUTenant, 'dp_comm_ip')
-        fields['cp_comm_ip'] = self.get_ip_address('nbi_network', VSPGWCTenant, 'cp_comm_ip')
-        fields['fpc_ip'] = self.get_ip_address('nbi_network', SDNControllerServiceInstance, 'fpc_ip')
-        fields['cp_nb_server_ip'] = self.get_ip_address('nbi_network', VSPGWCTenant, 'cp_nb_server_ip')
+        fields['zmq_sub_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sbi_network', "SDNControllerServiceInstance", 'zmq_sub_ip')
+        fields['zmq_pub_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sbi_network', "SDNControllerServiceInstance", 'zmq_pub_ip')
+        fields['dp_comm_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sbi_network', o, 'dp_comm_ip')
+        fields['cp_comm_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "VSPGWCTenant", 'cp_comm_ip')
+        fields['fpc_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "SDNControllerServiceInstance", 'fpc_ip')
+        fields['cp_nb_server_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "VSPGWCTenant", 'cp_nb_server_ip')
 
         # for dp_config.cfg file
-        fields['s1u_ip'] = self.get_ip_address('s1u_network', VSPGWUTenant, 's1u_ip')
-        fields['sgi_ip'] = self.get_ip_address('sgi_network', VSPGWUTenant, 'sgi_ip')
+        fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            's1u_network', o, 's1u_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sgi_network', "VSPGWUTenant", 'sgi_ip')
 
         return fields
 
-    def get_values_for_ng4t_wo_sdncontroller(self):
+    def get_values_for_ng4t_wo_sdncontroller(self, o):
         fields = {}
         fields['scenario'] = "ng4t_without_sdncontroller"
         # for interface.cfg file
         fields['zmq_sub_ip'] = "127.0.0.1"
         fields['zmq_pub_ip'] = "127.0.0.1"
-        fields['dp_comm_ip'] = self.get_ip_address('spgw_network', VSPGWUTenant, 'dp_comm_ip')
-        fields['cp_comm_ip'] = self.get_ip_address('spgw_network', VSPGWCTenant, 'cp_comm_ip')
+        fields['dp_comm_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'spgw_network', o, 'dp_comm_ip')
+        fields['cp_comm_ip'] = self.get_ip_address_from_peer_service_instance(
+            'spgw_network', "VSPGWCTenant", 'cp_comm_ip')
         fields['fpc_ip'] = "127.0.0.1"
         fields['cp_nb_server_ip'] = "127.0.0.1"
 
         # for cp_config.cfg file
-        fields['s1u_ip'] = self.get_ip_address('s1u_network', VSPGWUTenant, 's1u_ip')
-        fields['sgi_ip'] = self.get_ip_address('sgi_network', VSPGWUTenant, 'sgi_ip')
+        fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            's1u_network', o, 's1u_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sgi_network', o, 'sgi_ip')
 
         return fields
 
-    def get_values_for_spirent_w_sdncontroller(self):
+    def get_values_for_spirent_w_sdncontroller(self, o):
         fields = {}
         fields['scenario'] = "ng4t_with_sdncontroller"
         # for interface.cfg file
-        fields['zmq_sub_ip'] = self.get_ip_address('sbi_network', SDNControllerServiceInstance, 'zmq_sub_ip')
-        fields['zmq_pub_ip'] = self.get_ip_address('sbi_network', SDNControllerServiceInstance, 'zmq_pub_ip')
-        fields['dp_comm_ip'] = self.get_ip_address('sbi_network', VSPGWUTenant, 'dp_comm_ip')
-        fields['cp_comm_ip'] = self.get_ip_address('nbi_network', VSPGWCTenant, 'cp_comm_ip')
-        fields['fpc_ip'] = self.get_ip_address('nbi_network', SDNControllerServiceInstance, 'fpc_ip')
-        fields['cp_nb_server_ip'] = self.get_ip_address('nbi_network', VSPGWCTenant, 'cp_nb_server_ip')
+        fields['zmq_sub_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sbi_network', "SDNControllerServiceInstance", 'zmq_sub_ip')
+        fields['zmq_pub_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sbi_network', "SDNControllerServiceInstance", 'zmq_pub_ip')
+        fields['dp_comm_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sbi_network', o, 'dp_comm_ip')
+        fields['cp_comm_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "VSPGWCTenant", 'cp_comm_ip')
+        fields['fpc_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "SDNControllerServiceInstance", 'fpc_ip')
+        fields['cp_nb_server_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "VSPGWCTenant", 'cp_nb_server_ip')
 
         # for dp_config.cfg file
-        fields['s1u_ip'] = self.get_ip_address('s1u_network', VSPGWUTenant, 's1u_ip')
-        fields['sgi_ip'] = self.get_ip_address('sgi_network', VSPGWUTenant, 'sgi_ip')
+        fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            's1u_network', o, 's1u_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sgi_network', o, 'sgi_ip')
 
         return fields
 
-    def get_values_for_spirent_wo_sdncontroller(self):
+    def get_values_for_spirent_wo_sdncontroller(self, o):
         fields = {}
         fields['scenario'] = "ng4t_without_sdncontroller"
         # for interface.cfg file
         fields['zmq_sub_ip'] = "127.0.0.1"
         fields['zmq_pub_ip'] = "127.0.0.1"
-        fields['dp_comm_ip'] = self.get_ip_address('spgw_network', VSPGWUTenant, 'dp_comm_ip')
-        fields['cp_comm_ip'] = self.get_ip_address('spgw_network', VSPGWCTenant, 'cp_comm_ip')
+        fields['dp_comm_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'spgw_network', o, 'dp_comm_ip')
+        fields['cp_comm_ip'] = self.get_ip_address_from_peer_service_instance(
+            'spgw_network', "VSPGWCTenant", 'cp_comm_ip')
         fields['fpc_ip'] = "127.0.0.1"
         fields['cp_nb_server_ip'] = "127.0.0.1"
 
         # for cp_config.cfg file
-        fields['s1u_ip'] = self.get_ip_address('s1u_network', VSPGWUTenant, 's1u_ip')
-        fields['sgi_ip'] = self.get_ip_address('sgi_network', VSPGWUTenant, 'sgi_ip')
+        fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            's1u_network', o, 's1u_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sgi_network', o, 'sgi_ip')
 
         return fields
 
-    def has_venb(self):
-        # try get vMME instance
-        try:
-            instance_id = self.get_instance_id(VENBServiceInstance)
-        except Exception:
-            self.log.debug('VENBServiceInstance not found')
+    def has_instance(self, sitype, o):
+        i = self.get_peer_serviceinstance_of_type(sitype, o)
+        if not i:
+            self.log.info("Missing in ServiceInstance graph",
+                          serviceinstance=sitype)
             return False
 
-        return True
-
-    def has_vmme(self):
-        # try get vMME instance
-        try:
-            instance_id = self.get_instance_id(VMMETenant)
-        except Exception:
-            self.log.debug('VMMETenant not found')
-            return False
-
-        return True
-
-    def has_sdncontroller(self):
-        # try get vMME instance
-        try:
-            instance_id = self.get_instance_id(SDNControllerServiceInstance)
-        except Exception:
-            self.log.debug('SDNControllerServiceInstance not found')
-            return False
-
-        return True
-
-    def has_vspgwu(self):
-        # try get vMME instance
-        try:
-            instance_id = self.get_instance_id(VSPGWUTenant)
-        except Exception:
-            self.log.debug('VSPGWU not found')
-            return False
-
-        return True
-
-    def has_internetemulator(self):
-        # try get vMME instance
-        try:
-            instance_id = self.get_instance_id(InternetEmulatorServiceInstance)
-        except Exception:
-            self.log.debug('InternetEmulator instance not found')
-            return False
-
-        return True
+        return i.instance_id
 
     # Which scenario does it use among Spirent or NG4T?
-    def get_scenario(self):
+    def get_scenario(self, o):
         # try get vENB instance: one of both Spirent and NG4T
-        venb_flag = self.has_venb()
-        vmme_flag = self.has_vmme()
-        sdncontroller_flag = self.has_sdncontroller()
-        vspgwu_flag = self.has_vspgwu()
-        internetemulator_flag = self.has_internetemulator()
+        venb_flag = self.has_instance("VENBServiceInstance", o)
+        vmme_flag = self.has_instance("VMMETenant", o)
+        sdncontroller_flag = self.has_instance(
+            "SDNControllerServiceInstance", o)
+        vspgwu_flag = self.has_instance("VSPGWUTenant", o)
+        internetemulator_flag = self.has_instance(
+            "SDNControllerServiceInstance", o)
 
         if vmme_flag and venb_flag and sdncontroller_flag and vspgwu_flag and internetemulator_flag:
             return 'ng4t_with_sdncontroller'
@@ -199,19 +185,46 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             return 'spirent_with_sdncontroller'
 
         if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwu_flag and (
-        not internetemulator_flag):
+                not internetemulator_flag):
             return 'spirent_without_sdncontroller'
 
         return 'manual'
 
-    def get_ip_address(self, network_name, service_instance, parameter):
+    def get_peer_serviceinstance_of_type(self, sitype, o):
+        prov_link_set = ServiceInstanceLink.objects.filter(
+            subscriber_service_instance_id=o.id)
 
         try:
+            peer_service = next(
+                p for p in prov_link_set if p.leaf_model_name == sitype)
+        except StopIteration:
+            sub_link_set = ServiceInstanceLink.objects.filter(
+                provider_service_instance_id=o.id)
+            try:
+                peer_service = next(
+                    s for s in sub_link_set if s.leaf_model_name == sitype)
+            except StopIteration:
+                self.log.error(
+                    'Could not find service type in service graph', service_type=sitype, object=o)
+                raise Exception(
+                    "Synchronization failed due to incomplete service graph")
+
+        return peer_service
+
+    def get_ip_address_from_peer_service_instance(self, network_name, sitype, o, parameter=None):
+        peer_si = self.get_peer_serviceinstance_of_type(sitype, o)
+        return self.get_ip_address_for_peer_service_instance_instance(network_name, peer_si, parameter)
+
+    def get_ip_address_from_peer_service_instance_instance(self, network_name, peer_si, parameter=None):
+        try:
             net_id = self.get_network_id(network_name)
-            ins_id = self.get_instance_id(service_instance)
-            ip_address = Port.objects.get(network_id=net_id, instance_id=ins_id).ip
+            ins_id = peer_si.instance_id
+            ip_address = Port.objects.get(
+                network_id=net_id, instance_id=ins_id).ip
         except Exception:
-            self.log.error("Failed to fetch parameter", parameter = parameter, network_name = network_name)
+            self.log.error("Failed to fetch parameter",
+                           parameter=parameter,
+                           network_name=network_name)
             self.defer_sync("Waiting for parameters to become available")
 
         return ip_address
@@ -219,9 +232,3 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
     # To get each network id
     def get_network_id(self, network_name):
         return Network.objects.get(name=network_name).id
-
-    # To get service_instance (assumption: there is a single instance for each service)
-    def get_instance_id(self, serviceinstance):
-        instances = serviceinstance.objects.all()
-        instance_id = instances[0].instance_id
-        return instance_id
