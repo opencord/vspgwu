@@ -22,15 +22,8 @@ parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
 
 class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
-
-    provides = [VSPGWUTenant]
-
     observes = VSPGWUTenant
-
-    requested_interval = 0
-
     template_name = "vspgwutenant_playbook.yaml"
-
     service_key_name = "/opt/xos/configurations/mcord/mcord_private_key"
 
     def __init__(self, *args, **kwargs):
