@@ -143,7 +143,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(VENBServiceInstance)
         except Exception:
-            print 'cannot get VENBServiceInstance'
+            self.log.debug('VENBServiceInstance not found')
             return False
 
         return True
@@ -153,7 +153,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(VMMETenant)
         except Exception:
-            print 'cannot get VMMETenant'
+            self.log.debug('VMMETenant not found')
             return False
 
         return True
@@ -163,7 +163,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(SDNControllerServiceInstance)
         except Exception:
-            print 'cannot get SDNControllerServiceInstance'
+            self.log.debug('SDNControllerServiceInstance not found')
             return False
 
         return True
@@ -173,7 +173,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(VSPGWUTenant)
         except Exception:
-            print 'cannot get VSPGWUTenant'
+            self.log.debug('VSPGWU not found')
             return False
 
         return True
@@ -183,7 +183,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(InternetEmulatorServiceInstance)
         except Exception:
-            print 'cannot get InternetEmulatorServiceInstance'
+            self.log.debug('InternetEmulator instance not found')
             return False
 
         return True
@@ -221,7 +221,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         except Exception:
             ip_address = "error"
-            print "get failed -- %s" % (parameter)
+            self.log.error("Failed to fetch parameter", parameter = parameter, network_name = network_name)
 
         return ip_address
 
