@@ -142,7 +142,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(VENBServiceInstance)
         except Exception:
-            print 'cannot get VENBServiceInstance'
+            self.log.debug('VENBServiceInstance not found')
             return False
 
         return True
@@ -152,7 +152,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(VMMETenant)
         except Exception:
-            print 'cannot get VMMETenant'
+            self.log.debug('VMMETenant not found')
             return False
 
         return True
@@ -162,7 +162,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(SDNControllerServiceInstance)
         except Exception:
-            print 'cannot get SDNControllerServiceInstance'
+            self.log.debug('SDNControllerServiceInstance not found')
             return False
 
         return True
@@ -172,7 +172,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(VSPGWUTenant)
         except Exception:
-            print 'cannot get VSPGWUTenant'
+            self.log.debug('VSPGWU not found')
             return False
 
         return True
@@ -182,7 +182,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         try:
             instance_id = self.get_instance_id(InternetEmulatorServiceInstance)
         except Exception:
-            print 'cannot get InternetEmulatorServiceInstance'
+            self.log.debug('InternetEmulator instance not found')
             return False
 
         return True
@@ -217,7 +217,6 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             net_id = self.get_network_id(network_name)
             ins_id = self.get_instance_id(service_instance)
             ip_address = Port.objects.get(network_id=net_id, instance_id=ins_id).ip
-
         except Exception:
             self.log.error("Failed to fetch parameter", parameter = parameter, network_name = network_name)
             self.defer_sync("Waiting for parameters to become available")
