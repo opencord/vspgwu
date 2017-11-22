@@ -36,7 +36,6 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
     def __init__(self, *args, **kwargs):
         super(SyncVSPGWUTenant, self).__init__(*args, **kwargs)
 
-
     def get_extra_attributes(self, o):
 
         scenario = self.get_scenario()
@@ -222,6 +221,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         except Exception:
             ip_address = "error"
             self.log.error("Failed to fetch parameter", parameter = parameter, network_name = network_name)
+            self.defer_sync("Waiting for parameters to become available")
 
         return ip_address
 
