@@ -34,14 +34,14 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         scenario = self.get_scenario(o)
 
-        if scenario == 'ng4t_with_sdncontroller':
-            return self.get_values_for_ng4t_w_sdncontroller(o)
-        elif scenario == 'ng4t_without_sdncontroller':
-            return self.get_values_for_ng4t_wo_sdncontroller(o)
-        elif scenario == 'spirent_with_sdncontroller':
-            return self.get_values_for_spirent_w_sdncontroller(o)
-        elif scenario == 'spirent_without_sdncontroller':
-            return self.get_values_for_spirent_wo_sdncontroller(o)
+        if scenario == 'normal_scenario':
+            return self.get_values_for_normal_scenario(o)
+        elif scenario == 'normal_scenario_without_sdncontroller':
+            return self.get_values_for_normal_scenario_wo_sdncontroller(o)
+        elif scenario == 'emulator_scenario':
+            return self.get_values_for_emulator_scenario(o)
+        elif scenario == 'emulator_scenario_without_sdncontroller':
+            return self.get_values_for_emulator_scenario_wo_sdncontroller(o)
         else:
             return self.get_extra_attributes_for_manual(o)
 
@@ -61,11 +61,17 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         fields['s1u_ip'] = "manual"
         fields['sgi_ip'] = "manual"
 
+        # for static_arp.cfg file
+        fields['as_sgi_ip'] = "manual"
+        fields['as_sgi_mac'] = "manual"
+        fields['enb_s1u_ip'] = "manual"
+        fields['enb_s1u_mac'] = "manual"
+
         return fields
 
-    def get_values_for_ng4t_w_sdncontroller(self, o):
+    def get_values_for_normal_scenario(self, o):
         fields = {}
-        fields['scenario'] = "ng4t_with_sdncontroller"
+        fields['scenario'] = "normal_scenario"
         # for interface.cfg file
         fields['zmq_sub_ip'] = self.get_ip_address_from_peer_service_instance(
             'sbi_network', "SDNControllerServiceInstance", 'zmq_sub_ip')
@@ -86,11 +92,17 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance(
             'sgi_network', "VSPGWUTenant", 'sgi_ip')
 
+        # for static_arp.cfg file
+        fields['as_sgi_ip'] = self.get_ip_address('sgi_network', InternetEmulatorServiceInstance, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address('sgi_network', InternetEmulatorServiceInstance, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address('s1u_network', VENBServiceInstance, 'enb_s1u_mac')
+
         return fields
 
-    def get_values_for_ng4t_wo_sdncontroller(self, o):
+    def get_values_for_normal_scenario_wo_sdncontroller(self, o):
         fields = {}
-        fields['scenario'] = "ng4t_without_sdncontroller"
+        fields['scenario'] = "normal_scenario_without_sdncontroller"
         # for interface.cfg file
         fields['zmq_sub_ip'] = "127.0.0.1"
         fields['zmq_pub_ip'] = "127.0.0.1"
@@ -107,11 +119,17 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
             'sgi_network', o, 'sgi_ip')
 
+        # for static_arp.cfg file
+        fields['as_sgi_ip'] = self.get_ip_address('sgi_network', InternetEmulatorServiceInstance, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address('sgi_network', InternetEmulatorServiceInstance, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address('s1u_network', VENBServiceInstance, 'enb_s1u_mac')
+
         return fields
 
-    def get_values_for_spirent_w_sdncontroller(self, o):
+    def get_values_for_emulator_scenario(self, o):
         fields = {}
-        fields['scenario'] = "ng4t_with_sdncontroller"
+        fields['scenario'] = "emulator_scenario"
         # for interface.cfg file
         fields['zmq_sub_ip'] = self.get_ip_address_from_peer_service_instance(
             'sbi_network', "SDNControllerServiceInstance", 'zmq_sub_ip')
@@ -132,11 +150,17 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
             'sgi_network', o, 'sgi_ip')
 
+        # for static_arp.cfg file
+        fields['as_sgi_ip'] = self.get_ip_address('sgi_network', VENBServiceInstance, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address('sgi_network', VENBServiceInstance, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address('s1u_network', VENBServiceInstance, 'enb_s1u_mac')
+
         return fields
 
-    def get_values_for_spirent_wo_sdncontroller(self, o):
+    def get_values_for_emulator_scenario_wo_sdncontroller(self, o):
         fields = {}
-        fields['scenario'] = "ng4t_without_sdncontroller"
+        fields['scenario'] = "emulator_scenario_without_sdncontroller"
         # for interface.cfg file
         fields['zmq_sub_ip'] = "127.0.0.1"
         fields['zmq_pub_ip'] = "127.0.0.1"
@@ -152,6 +176,12 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             's1u_network', o, 's1u_ip')
         fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
             'sgi_network', o, 'sgi_ip')
+
+        # for static_arp.cfg file
+        fields['as_sgi_ip'] = self.get_ip_address('sgi_network', VENBServiceInstance, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address('sgi_network', VENBServiceInstance, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address('s1u_network', VENBServiceInstance, 'enb_s1u_mac')
 
         return fields
 
@@ -175,18 +205,24 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         internetemulator_flag = self.has_instance(
             "SDNControllerServiceInstance", o)
 
+        # wait until vspgwu and env are comming up
+        if (not vspgwu_flag):
+            self.defer_sync("Waiting for vSPGWU to come up")
+
+        if (not venb_flag):
+            self.defer_sync("Waiting for vENB to come up")
+
         if vmme_flag and venb_flag and sdncontroller_flag and vspgwu_flag and internetemulator_flag:
-            return 'ng4t_with_sdncontroller'
+            return 'normal_scenario'
 
         if vmme_flag and venb_flag and (not sdncontroller_flag) and vspgwu_flag and internetemulator_flag:
-            return 'ng4t_without_sdncontroller'
+            return 'normal_scenario_without_sdncontroller'
 
         if (not vmme_flag) and venb_flag and sdncontroller_flag and vspgwu_flag and (not internetemulator_flag):
-            return 'spirent_with_sdncontroller'
+            return 'emulator_scenario'
 
-        if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwu_flag and (
-                not internetemulator_flag):
-            return 'spirent_without_sdncontroller'
+        if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwu_flag and (not internetemulator_flag):
+            return 'emulator_scenario_without_sdncontroller'
 
         return 'manual'
 
@@ -222,12 +258,25 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             ip_address = Port.objects.get(
                 network_id=net_id, instance_id=ins_id).ip
         except Exception:
-            self.log.error("Failed to fetch parameter",
-                           parameter=parameter,
-                           network_name=network_name)
+            ip_address = "error"
+            self.log.error("Failed to fetch parameter to get IP", parameter = parameter, network_name = network_name)
             self.defer_sync("Waiting for parameters to become available")
 
         return ip_address
+
+    def get_mac_address(self, network_name, service_instance, parameter):
+
+        try:
+            net_id = self.get_network_id(network_name)
+            ins_id = self.get_instance_id(service_instance)
+            mac_address = Port.objects.get(network_id=net_id, instance_id=ins_id).ip
+
+        except Exception:
+            mac_address = "error"
+            self.log.error("Failed to fetch parameter to get MAC", parameter = parameter, network_name = network_name)
+            self.defer_sync("Waiting for parameters to become available")
+
+        return mac_address
 
     # To get each network id
     def get_network_id(self, network_name):
