@@ -21,6 +21,8 @@ from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAns
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
 
+class ServiceGraphException(Exception):
+    pass
 
 class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
     observes = VSPGWUTenant
@@ -186,8 +188,9 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         return fields
 
     def has_instance(self, sitype, o):
-        i = self.get_peer_serviceinstance_of_type(sitype, o)
-        if not i:
+        try:
+            i = self.get_peer_serviceinstance_of_type(sitype, o)
+        except ServiceGraphException:
             self.log.info("Missing in ServiceInstance graph",
                           serviceinstance=sitype)
             return False
@@ -242,7 +245,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             except StopIteration:
                 self.log.error(
                     'Could not find service type in service graph', service_type=sitype, object=o)
-                raise Exception(
+                raise ServiceGraphException(
                     "Synchronization failed due to incomplete service graph")
 
         return peer_service
