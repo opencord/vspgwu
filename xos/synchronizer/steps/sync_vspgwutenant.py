@@ -91,8 +91,8 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         # for dp_config.cfg file
         fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
             's1u_network', o, o, 's1u_ip')
-        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance(
-            'sgi_network', "VSPGWUTenant", o, 'sgi_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sgi_network', o, o, 'sgi_ip')
 
         # for static_arp.cfg file
         fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance('sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_ip')
@@ -204,27 +204,27 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         vmme_flag = self.has_instance("VMMETenant", o)
         sdncontroller_flag = self.has_instance(
             "SDNControllerServiceInstance", o)
-        vspgwu_flag = self.has_instance("VSPGWUTenant", o)
+        vspgwc_flag = self.has_instance("VSPGWCTenant", o)
         internetemulator_flag = self.has_instance(
             "SDNControllerServiceInstance", o)
 
-        # wait until vspgwu and env are comming up
-        if (not vspgwu_flag):
-            self.defer_sync(o, "Waiting for vSPGWU to come up")
+        # wait until vspgwc and env are comming up
+        if (not vspgwc_flag):
+            self.defer_sync(o, "Waiting for vSPGWc to come up")
 
         if (not venb_flag):
             self.defer_sync(o, "Waiting for vENB to come up")
 
-        if vmme_flag and venb_flag and sdncontroller_flag and vspgwu_flag and internetemulator_flag:
+        if vmme_flag and venb_flag and sdncontroller_flag and vspgwc_flag and internetemulator_flag:
             return 'normal_scenario'
 
-        if vmme_flag and venb_flag and (not sdncontroller_flag) and vspgwu_flag and internetemulator_flag:
+        if vmme_flag and venb_flag and (not sdncontroller_flag) and vspgwc_flag and internetemulator_flag:
             return 'normal_scenario_without_sdncontroller'
 
-        if (not vmme_flag) and venb_flag and sdncontroller_flag and vspgwu_flag and (not internetemulator_flag):
+        if (not vmme_flag) and venb_flag and sdncontroller_flag and vspgwc_flag and (not internetemulator_flag):
             return 'emulator_scenario'
 
-        if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwu_flag and (not internetemulator_flag):
+        if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwc_flag and (not internetemulator_flag):
             return 'emulator_scenario_without_sdncontroller'
 
         return 'manual'
