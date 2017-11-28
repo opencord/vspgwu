@@ -180,10 +180,10 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             'sgi_network', o, o, 'sgi_ip')
 
         # for static_arp.cfg file
-        fields['as_sgi_ip'] = self.get_ip_address('sgi_network', VENBServiceInstance, o, 'as_sgi_ip')
-        fields['as_sgi_mac'] = self.get_mac_address('sgi_network', VENBServiceInstance, o, 'as_sgi_mac')
-        fields['enb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, o, 'enb_s1u_ip')
-        fields['enb_s1u_mac'] = self.get_mac_address('s1u_network', VENBServiceInstance, o, 'enb_s1u_mac')
+        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance('sgi_network', "VENBServiceInstance", o, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance('sgi_network', "VENBServiceInstance", o, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
 
         return fields
 
