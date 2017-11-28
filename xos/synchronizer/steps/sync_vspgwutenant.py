@@ -273,10 +273,10 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         return ip_address
 
-    def get_mac_address_from_peer_service_instance_instance(self, network_name, service_instance, o, parameter):
+    def get_mac_address_from_peer_service_instance_instance(self, network_name, peer_si, o, parameter):
         try:
             net_id = self.get_network_id(network_name)
-            ins_id = self.get_instance_id(service_instance)
+            ins_id = peer_si.leaf_model.instance_id
             mac_address = Port.objects.get(network_id=net_id, instance_id=ins_id).mac
 
         except Exception:
