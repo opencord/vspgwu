@@ -1,4 +1,4 @@
-option name = "vSPGWU";
+option name = "vspgwu";
 option app_label = "vspgwu";
 option kind = "vEPC";
 
