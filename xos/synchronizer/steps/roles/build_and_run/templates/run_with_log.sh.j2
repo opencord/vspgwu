@@ -14,3 +14,11 @@
 # limitations under the License.
 
 ./udev.sh > results &
+
+FINISH_FLAG=0
+while [ $FINISH_FLAG -eq 0 ];
+do
+    FINISH_FLAG=$(cat results | grep 'DP: RTE INFO enabled' | wc -l)
+	echo “wait until DP is coming up”
+	sleep 1
+done
