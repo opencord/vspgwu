@@ -1,6 +1,5 @@
 option name = "vspgwu";
 option app_label = "vspgwu";
-option kind = "vEPC";
 
 message VSPGWUService (Service){
     option verbose_name = "Virtual Serving Gateway User Plane Service";
