@@ -31,7 +31,13 @@
     - s1u_ip: {{ s1u_ip }}
     - sgi_ip: {{ sgi_ip }}
     - scenario: {{ scenario }}
+    - as_sgi_ip: {{ as_sgi_ip }}
+    - as_sgi_mac: {{ as_sgi_mac }}
+    - enb_s1u_ip: {{ enb_s1u_ip }}
+    - enb_s1u_mac: {{ enb_s1u_mac }}
 
   roles:
     - interface_config
+    #- build_and_run #Temporally comment out until epc-service is completed.
+
 

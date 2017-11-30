@@ -24,16 +24,22 @@
     src=interface.cfg.j2
     dest="{{source_path}}/config/interface.cfg" owner=root group=root mode=755
 
+- name: make static_arp config file
+  become: yes
+  template:
+    src=static_arp.cfg.j2
+    dest="{{source_path}}/config/static_arp.cfg" owner=root group=root mode=755
+
 - name: get date
   shell: date +"%Y-%m-%d_%H-%M"
   register: tmp_date
 
 - name: get port_0 value
-  shell: lspci -v -k | grep -i 'ethernet' | head -n 1 | tail -n 1 | awk '{print "0000:"$1}'
+  shell: "ifconfig | grep -B 1 {{ s1u_ip }} | awk '{print $1}' | head -n 1"
   register: tmp_port_0
 
 - name: get port_1 value
-  shell: lspci -v -k | grep -i 'ethernet' | head -n 2 | tail -n 1 | awk '{print "0000:"$1}'
+  shell: "ifconfig | grep -B 1 {{ sgi_ip }} | awk '{print $1}' | head -n 1"
   register: tmp_port_1
 
 - name: get s1u_mac value
@@ -58,16 +64,12 @@
     src=dp_config.cfg.j2
     dest="{{source_path}}/config/dp_config.cfg" owner=root group=root mode=755
 
-#- name: Build ngic
-#  become: yes
-#  shell: "{{ item }}"
-#  args:
-#    chdir: "{{ source_path }}"
-#  environment:
-#    NG_CORE: "{{ source_path }}"
-#    RTE_SDK: "{{ source_path }}/dpdk"
-#    RTE_TARGET: "x86_64-native-linuxapp-gcc"
-#    HYPERSCANDIR: "/root/ngic/hyperscan-4.1.0"
-#  with_items:
-#    - make
-#    - /root/ngic/dp/run.sh -c 1
+- name: change Makefile.j2
+  become: yes
+  template:
+    src=Makefile.j2
+    dest="{{source_path}}/dp/Makefile" owner=root group=root mode=755
+
+- name: write flag for interface_config
+  become: yes
+  shell: "echo 1 > {{source_path}}/dp/finish_flag_interface_config"
