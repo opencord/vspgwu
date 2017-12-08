@@ -21,8 +21,10 @@ from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAns
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
 
+
 class ServiceGraphException(Exception):
     pass
+
 
 class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
     observes = VSPGWUTenant
@@ -91,14 +93,18 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         # for dp_config.cfg file
         fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
             's1u_network', o, o, 's1u_ip')
-        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance(
-            'sgi_network', "VSPGWUTenant", o, 'sgi_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sgi_network', o, o, 'sgi_ip')
 
         # for static_arp.cfg file
-        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance('sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_ip')
-        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance('sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_mac')
-        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
-        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
+        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance(
+            'sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
 
         return fields
 
@@ -122,10 +128,14 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             'sgi_network', o, o, 'sgi_ip')
 
         # for static_arp.cfg file
-        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance('sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_ip')
-        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance('sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_mac')
-        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
-        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
+        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance(
+            'sgi_network', "InternetEmulatorServiceInstance", o, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
 
         return fields
 
@@ -153,10 +163,14 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             'sgi_network', o, o, 'sgi_ip')
 
         # for static_arp.cfg file
-        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance('sgi_network', "VENBServiceInstance", o, 'as_sgi_ip')
-        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance('sgi_network', "VENBServiceInstance", o, 'as_sgi_mac')
-        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
-        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance('s1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
+        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sgi_network', "VENBServiceInstance", o, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance(
+            'sgi_network', "VENBServiceInstance", o, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
 
         return fields
 
@@ -180,10 +194,14 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             'sgi_network', o, o, 'sgi_ip')
 
         # for static_arp.cfg file
-        fields['as_sgi_ip'] = self.get_ip_address('sgi_network', VENBServiceInstance, o, 'as_sgi_ip')
-        fields['as_sgi_mac'] = self.get_mac_address('sgi_network', VENBServiceInstance, o, 'as_sgi_mac')
-        fields['enb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, o, 'enb_s1u_ip')
-        fields['enb_s1u_mac'] = self.get_mac_address('s1u_network', VENBServiceInstance, o, 'enb_s1u_mac')
+        fields['as_sgi_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sgi_network', "VENBServiceInstance", o, 'as_sgi_ip')
+        fields['as_sgi_mac'] = self.get_mac_address_from_peer_service_instance(
+            'sgi_network', "VENBServiceInstance", o, 'as_sgi_mac')
+        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance(
+            's1u_network', "VENBServiceInstance", o, 'enb_s1u_mac')
 
         return fields
 
@@ -204,27 +222,27 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         vmme_flag = self.has_instance("VMMETenant", o)
         sdncontroller_flag = self.has_instance(
             "SDNControllerServiceInstance", o)
-        vspgwu_flag = self.has_instance("VSPGWUTenant", o)
+        vspgwc_flag = self.has_instance("VSPGWCTenant", o)
         internetemulator_flag = self.has_instance(
             "SDNControllerServiceInstance", o)
 
-        # wait until vspgwu and env are comming up
-        if (not vspgwu_flag):
-            self.defer_sync(o, "Waiting for vSPGWU to come up")
+        # wait until vspgwc and env are comming up
+        if (not vspgwc_flag):
+            self.defer_sync(o, "Waiting for vSPGWc to come up")
 
         if (not venb_flag):
             self.defer_sync(o, "Waiting for vENB to come up")
 
-        if vmme_flag and venb_flag and sdncontroller_flag and vspgwu_flag and internetemulator_flag:
+        if vmme_flag and venb_flag and sdncontroller_flag and vspgwc_flag and internetemulator_flag:
             return 'normal_scenario'
 
-        if vmme_flag and venb_flag and (not sdncontroller_flag) and vspgwu_flag and internetemulator_flag:
+        if vmme_flag and venb_flag and (not sdncontroller_flag) and vspgwc_flag and internetemulator_flag:
             return 'normal_scenario_without_sdncontroller'
 
-        if (not vmme_flag) and venb_flag and sdncontroller_flag and vspgwu_flag and (not internetemulator_flag):
+        if (not vmme_flag) and venb_flag and sdncontroller_flag and vspgwc_flag and (not internetemulator_flag):
             return 'emulator_scenario'
 
-        if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwu_flag and (not internetemulator_flag):
+        if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwc_flag and (not internetemulator_flag):
             return 'emulator_scenario_without_sdncontroller'
 
         return 'manual'
@@ -273,14 +291,16 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         return ip_address
 
-    def get_mac_address_from_peer_service_instance_instance(self, network_name, service_instance, o, parameter):
+    def get_mac_address_from_peer_service_instance_instance(self, network_name, peer_si, o, parameter):
         try:
             net_id = self.get_network_id(network_name)
-            ins_id = self.get_instance_id(service_instance)
-            mac_address = Port.objects.get(network_id=net_id, instance_id=ins_id).mac
+            ins_id = peer_si.leaf_model.instance_id
+            mac_address = Port.objects.get(
+                network_id=net_id, instance_id=ins_id).mac
 
         except Exception:
-            self.log.error("Failed to fetch parameter to get MAC", parameter = parameter, network_name = network_name)
+            self.log.error("Failed to fetch parameter to get MAC",
+                           parameter=parameter, network_name=network_name)
             self.defer_sync(o, "Waiting for parameters to become available")
 
         return mac_address
