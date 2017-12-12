@@ -20,6 +20,7 @@ from synchronizers.new_base.exceptions import *
 
 class VSPGWUTenantPolicy(TenantWithContainerPolicy):
     model_name = "VSPGWUTenant"
+    constrain_by_service_instance = True
 
     def handle_create(self, service_instance):
         return self.handle_update(service_instance)
