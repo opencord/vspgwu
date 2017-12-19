@@ -46,6 +46,10 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
             return self.get_values_for_emulator_scenario(o)
         elif scenario == 'emulator_scenario_without_sdncontroller':
             return self.get_values_for_emulator_scenario_wo_sdncontroller(o)
+        elif scenario == 'hardware_scenario':
+            return self.get_values_for_hardware_scenario(o)
+        elif scenario == 'hardware_scenario_without_sdncontroller':
+            return self.get_values_for_hardware_scenario_wo_sdncontroller(o)
         else:
             return self.get_extra_attributes_for_manual(o)
 
@@ -205,6 +209,68 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         return fields
 
+    def get_values_for_hardware_scenario(self, o):
+        fields = {}
+        fields['scenario'] = "hardware_scenario"
+        # for interface.cfg file
+        fields['zmq_sub_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sbi_network', "SDNControllerServiceInstance", o, 'zmq_sub_ip')
+        fields['zmq_pub_ip'] = self.get_ip_address_from_peer_service_instance(
+            'sbi_network', "SDNControllerServiceInstance", o, 'zmq_pub_ip')
+        fields['dp_comm_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sbi_network', o, o, 'dp_comm_ip')
+        fields['cp_comm_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "VSPGWCTenant", o, 'cp_comm_ip')
+        fields['fpc_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "SDNControllerServiceInstance", o, 'fpc_ip')
+        fields['cp_nb_server_ip'] = self.get_ip_address_from_peer_service_instance(
+            'nbi_network', "VSPGWCTenant", o, 'cp_nb_server_ip')
+
+        # for dp_config.cfg file
+        fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'flat_network_s1u', o, o, 's1u_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sgi_network', o, o, 'sgi_ip')
+
+        # for static_arp.cfg file
+        fields['as_sgi_ip'] = "manual"
+        fields['as_sgi_mac'] = "manual"
+        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance(
+            'flat_network_s1u', "VMMETenant", o, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance(
+            'flat_network_s1u', "VMMETenant", o, 'enb_s1u_mac')
+
+        return fields
+
+    def get_values_for_hardware_scenario_wo_sdncontroller(self, o):
+        fields = {}
+        fields['scenario'] = "hardware_scenario_without_sdncontroller"
+        # for interface.cfg file
+        fields['zmq_sub_ip'] = "127.0.0.1"
+        fields['zmq_pub_ip'] = "127.0.0.1"
+        fields['dp_comm_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'spgw_network', o, o, 'dp_comm_ip')
+        fields['cp_comm_ip'] = self.get_ip_address_from_peer_service_instance(
+            'spgw_network', "VSPGWCTenant", o, 'cp_comm_ip')
+        fields['fpc_ip'] = "127.0.0.1"
+        fields['cp_nb_server_ip'] = "127.0.0.1"
+
+        # for dp_config.cfg file
+        fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'flat_network_s1u', o, o, 's1u_ip')
+        fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
+            'sgi_network', o, o, 'sgi_ip')
+
+        # for static_arp.cfg file
+        fields['as_sgi_ip'] = "manual"
+        fields['as_sgi_mac'] = "manual"
+        fields['enb_s1u_ip'] = self.get_ip_address_from_peer_service_instance(
+            'flat_network_s1u', "VMMETenant", o, 'enb_s1u_ip')
+        fields['enb_s1u_mac'] = self.get_mac_address_from_peer_service_instance(
+            'flat_network_s1u', "VMMETenant", o, 'enb_s1u_mac')
+
+        return fields
+
     def has_instance(self, sitype, o):
         try:
             i = self.get_peer_serviceinstance_of_type(sitype, o)
@@ -226,13 +292,6 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         internetemulator_flag = self.has_instance(
             "SDNControllerServiceInstance", o)
 
-        # wait until vspgwc and env are comming up
-        if (not vspgwc_flag):
-            self.defer_sync(o, "Waiting for vSPGWc to come up")
-
-        if (not venb_flag):
-            self.defer_sync(o, "Waiting for vENB to come up")
-
         if vmme_flag and venb_flag and sdncontroller_flag and vspgwc_flag and internetemulator_flag:
             return 'normal_scenario'
 
@@ -244,6 +303,12 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         if (not vmme_flag) and venb_flag and (not sdncontroller_flag) and vspgwc_flag and (not internetemulator_flag):
             return 'emulator_scenario_without_sdncontroller'
+
+        if vmme_flag and sdncontroller_flag and vspgwc_flag and (not internetemulator_flag):
+            return 'hardware_scenario'
+
+        if vmme_flag and (not sdncontroller_flag) and vspgwc_flag and (not internetemulator_flag):
+            return 'hardware_scenario_without_sdncontroller'
 
         return 'manual'
 
