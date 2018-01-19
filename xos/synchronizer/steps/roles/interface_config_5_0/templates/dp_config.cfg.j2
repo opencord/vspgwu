@@ -1,0 +1,20 @@
+NOW={{ date }}
+FILE="logs/dp_{{ date }}.log"
+
+#dp configure parameter selections
+#SPGW_CFG:: SGWU=01; PGWU=02; SPGWU=03
+
+#####[SPGWU]#####
+SPGW_CFG=03
+S1U_PORT={{ enum_port_0 }}
+SGI_PORT={{ enum_port_0 }}
+S1U_IP={{ s1u_ip }}
+S1U_MAC={{ s1u_mac }}
+SGI_IP={{ sgi_ip }}
+SGI_MAC={{ sgi_mac }}
+
+NUM_WORKER=1
+MEMORY=4096
+
+#Set 1 to enabled numa, otherwise set to 0
+NUMA=1

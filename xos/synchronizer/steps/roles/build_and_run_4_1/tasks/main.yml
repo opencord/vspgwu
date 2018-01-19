@@ -19,16 +19,16 @@
   become: yes
   template:
     src=run_with_log.sh.j2
-    dest="{{source_path}}/dp/run_with_log.sh" owner=root group=root mode=755
+    dest="{{source_path_4_1}}/dp/run_with_log.sh" owner=root group=root mode=755
 
 - name: build and run vspgwu
   become: yes
   shell: "{{ item }}"
   args:
-    chdir: "{{ source_path }}/dp"
+    chdir: "{{ source_path_4_1 }}/dp"
   environment:
-    NG_CORE: "{{ source_path }}"
-    RTE_SDK: "{{ source_path }}/dpdk"
+    NG_CORE: "{{ source_path_4_1 }}"
+    RTE_SDK: "{{ source_path_4_1 }}/dpdk"
     RTE_TARGET: "x86_64-native-linuxapp-gcc"
     HYPERSCANDIR: "/root/ngic/hyperscan-4.1.0"
   with_items:
@@ -39,4 +39,4 @@
 # Finish
 - name: write flag
   become: yes
-  shell: "echo 1 > {{source_path}}/dp/finish_flag_build_and_run"
+  shell: "echo 1 > {{source_path_4_1}}/dp/finish_flag_build_and_run"

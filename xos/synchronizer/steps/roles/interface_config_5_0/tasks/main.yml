@@ -11,24 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#sudo lshw -businfo -c network | grep ens3 | awk '{print $1}' | awk -F '@' '{print $2}'
 
 ---
 
 - name: resolve sudo timeout
   become: yes
   shell: "echo 127.0.1.1       $(cat /etc/hostname) >> /etc/hosts"
-
-- name: make interface config file
-  become: yes
-  template:
-    src=interface.cfg.j2
-    dest="{{source_path}}/config/interface.cfg" owner=root group=root mode=755
-
-- name: make static_arp config file
-  become: yes
-  template:
-    src=static_arp.cfg.j2
-    dest="{{source_path}}/config/static_arp.cfg" owner=root group=root mode=755
 
 - name: get date
   shell: date +"%Y-%m-%d_%H-%M"
@@ -58,18 +47,42 @@
     sgi_mac: "{{ tmp_sgi_mac.stdout }}"
     date: "{{ tmp_date.stdout }}"
 
+- name: get enumeration number for port_0
+  become: yes
+  shell: "lshw -businfo -c network | grep {{ port_0 }} | awk '{print $1}' | awk -F '@' '{print $2}'"
+  register: tmp_enum_port_0
+
+- name: get enumeration number for port_1
+  become: yes
+  shell: "lshw -businfo -c network | grep {{ port_1 }} | awk '{print $1}' | awk -F '@' '{print $2}'"
+  register: tmp_enum_port_1
+
+- name: assign enumeration numbers into each variable
+  set_fact:
+    enum_port_0: "{{ tmp_enum_port_0.stdout }}"
+    enum_port_1: "{{ tmp_enum_port_1.stdout }}"
+
+- name: make interface config file
+  become: yes
+  template:
+    src=interface.cfg.j2
+    dest="{{source_path_5_0}}/config/interface.cfg" owner=root group=root mode=755
+
+- name: make static_arp config file
+  become: yes
+  template:
+    src=static_arp.cfg.j2
+    dest="{{source_path_5_0}}/config/static_arp.cfg" owner=root group=root mode=755
+
 - name: make dp_config config file
   become: yes
   template:
     src=dp_config.cfg.j2
-    dest="{{source_path}}/config/dp_config.cfg" owner=root group=root mode=755
+    dest="{{source_path_5_0}}/config/dp_config.cfg" owner=root group=root mode=755
 
-- name: change Makefile.j2
+# Make shell script to run ngic
+- name: make vdev_run script
   become: yes
   template:
-    src=Makefile.j2
-    dest="{{source_path}}/dp/Makefile" owner=root group=root mode=755
-
-- name: write flag for interface_config
-  become: yes
-  shell: "echo 1 > {{source_path}}/dp/finish_flag_interface_config"
+    src=vdev_run.sh.j2
+    dest="{{source_path_5_0}}/dp/vdev_run.sh" owner=root group=root mode=755
