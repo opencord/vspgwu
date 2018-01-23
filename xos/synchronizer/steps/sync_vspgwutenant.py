@@ -119,7 +119,7 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
 
         # for cp_config.cfg file
         fields['s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance(
-            's1u_network', o, o, 's1u_ip')
+            'flat_network_s1u', o, o, 's1u_ip')
         fields['sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance(
             'sgi_network', o, o, 'sgi_ip')
 
@@ -180,25 +180,62 @@ class SyncVSPGWUTenant(SyncInstanceUsingAnsible):
         return 'manual'
 
     def get_peer_serviceinstance_of_type(self, sitype, o):
-        prov_link_set = ServiceInstanceLink.objects.filter(
-            subscriber_service_instance_id=o.id)
+
+        global_list = self.get_all_instances_in_graph(o)
 
         try:
-            peer_service = next(
-                p.provider_service_instance for p in prov_link_set if p.provider_service_instance.leaf_model_name == sitype)
+            peer_service = next(p for p in global_list if p.leaf_model_name == sitype)
+
         except StopIteration:
-            sub_link_set = ServiceInstanceLink.objects.filter(
-                provider_service_instance_id=o.id)
-            try:
-                peer_service = next(
-                    s.subscriber_service_instance for s in sub_link_set if s.subscriber_service_instance.leaf_model_name == sitype)
-            except StopIteration:
-                self.log.error(
-                    'Could not find service type in service graph', service_type=sitype, object=o)
-                raise ServiceGraphException(
-                    "Synchronization failed due to incomplete service graph")
+            self.log.error(
+                'Could not find service type in service graph', service_type=sitype, object=o)
+            raise ServiceGraphException(
+                "Synchronization failed due to incomplete service graph")
 
         return peer_service
+
+    def has_instance_in_list(self, list, o):
+        for instance in list:
+            if instance.leaf_model_name == o.leaf_model_name:
+                return True
+
+        return False
+
+    def get_all_instances_in_graph(self, o):
+
+        to_search_list = self.get_one_hop_instances_in_graph(o)
+        result_list = []
+
+        while len(to_search_list) > 0:
+            tmp_obj = to_search_list[0]
+            to_search_list.remove(tmp_obj)
+            tmp_list = self.get_one_hop_instances_in_graph(tmp_obj)
+
+            for index_obj in tmp_list:
+                if (not self.has_instance_in_list(to_search_list, index_obj)) and (not self.has_instance_in_list(result_list, index_obj)):
+                    to_search_list.append(index_obj)
+
+            result_list.append(tmp_obj)
+        return result_list
+
+    def get_one_hop_instances_in_graph(self, o):
+        instance_list = []
+
+        # 1 hop forward and backward
+        prov_links = ServiceInstanceLink.objects.filter(subscriber_service_instance_id=o.id)
+        subs_links = ServiceInstanceLink.objects.filter(provider_service_instance_id=o.id)
+
+        # add instances located in 1 hop into instance_list
+        for tmp_link1 in prov_links:
+            if not self.has_instance_in_list(instance_list, tmp_link1.provider_service_instance):
+                instance_list.append(tmp_link1.provider_service_instance)
+
+        for tmp_link1 in subs_links:
+            if not self.has_instance_in_list(instance_list, tmp_link1.subscriber_service_instance):
+                instance_list.append(tmp_link1.subscriber_service_instance)
+
+        return instance_list
+
 
     # Maybe merge the two pairs of functions into one, with an address type "mac" or "ip" - SB
     def get_ip_address_from_peer_service_instance(self, network_name, sitype, o, parameter=None):
