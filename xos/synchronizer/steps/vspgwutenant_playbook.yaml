@@ -31,7 +31,7 @@
     - cp_nb_server_ip: {{ cp_nb_server_ip }}
     - s1u_ip: {{ s1u_ip }}
     - sgi_ip: {{ sgi_ip }}
-    - scenario: {{ scenario }}
+    - scenario: {{ blueprint }}
     - as_sgi_ip: {{ as_sgi_ip }}
     - as_sgi_mac: {{ as_sgi_mac }}
     - enb_s1u_ip: {{ enb_s1u_ip }}
