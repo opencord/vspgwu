@@ -25,7 +25,6 @@ blueprints:
   - name: cord_5_0_blueprint
     graph:
       - name: VMMETenant
-        links:
       - name: VSPGWCTenant
         links:
           - name: VMMETenant
