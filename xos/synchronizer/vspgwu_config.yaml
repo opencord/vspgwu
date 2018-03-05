@@ -13,14 +13,19 @@
 # limitations under the License.
 
 
-name: vspgwu-synchronizer
+name: vspgwu
 accessor:
   username: xosadmin@opencord.org
   password: "@/opt/xos/services/vspgwu/credentials/xosadmin@opencord.org"
+required_models:
+  - VSPGWUService
+  - VSPGWUVendor
+  - VSPGWUTenant
 dependency_graph: "/opt/xos/synchronizers/vspgwu/model-deps"
 steps_dir: "/opt/xos/synchronizers/vspgwu/steps"
 sys_dir: "/opt/xos/synchronizers/vspgwu/sys"
 model_policies_dir: "/opt/xos/synchronizers/vspgwu/model_policies"
+models_dir: "/opt/xos/synchronizers/vspgwu/models"
 blueprints:
   - name: cord_5_0_blueprint
     graph:
